@@ -28,16 +28,16 @@ export default function TabLayout() {
             paddingHorizontal: 16,
           },
           android: {
-            height: 70,
-            paddingBottom: 8,
-            paddingTop: 8,
-            paddingHorizontal: 16,
+            height: 80,
+            paddingBottom: 6,
+            paddingTop: 6,
+            paddingHorizontal: 10,
             elevation: 8,
           },
           default: {
             height: 70,
-            paddingBottom: 8,
-            paddingTop: 8,
+            paddingBottom: 6,
+            paddingTop: 6,
             paddingHorizontal: 16,
           },
         }),
@@ -93,12 +93,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="categories"
+        name="policy"
         options={{
-          title: "Categories",
+          title: "Policy",
           tabBarIcon: ({ color, focused }) => (
             <Image
-              source={require("../../assets/images/application.png")}
+              source={require("../../assets/images/insurance-policy.png")}
               style={{ 
                 width: 24, 
                 height: 24,
