@@ -43,7 +43,9 @@ const Claims = () => {
 
     if (!formData.policyNumber.trim()) {
       newErrors.policyNumber = "Policy number is required";
-    } else if (!/^GIC\/\d{4}-\d{2}\/\d{2}\/\d{4}$/.test(formData.policyNumber)) {
+    } else if (
+      !/^GIC\/\d{4}-\d{2}\/\d{2}\/\d{4}$/.test(formData.policyNumber)
+    ) {
       newErrors.policyNumber = "Format: GIC/2025-26/01/5244";
     }
 
@@ -88,11 +90,18 @@ const Claims = () => {
     if (validateForm()) {
       Alert.alert("Success", "Form validated successfully!");
       console.log("Form Data:", formData);
-      router.push('../Accident')
+      router.push("../Accident");
     }
   };
 
-  const FormField = ({ label, value, onChangeText, placeholder, error, keyboardType = "default" }) => (
+  const FormField = ({
+    label,
+    value,
+    onChangeText,
+    placeholder,
+    error,
+    keyboardType = "default",
+  }) => (
     <View style={styles.fieldContainer}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
@@ -148,14 +157,31 @@ const Claims = () => {
           style={[styles.tabButton, activeTab === "claim" && styles.activeTab]}
           onPress={() => setActiveTab("claim")}
         >
-          <Text style={activeTab === "claim" ? styles.activeText : styles.inactiveText}>Claim Process</Text>
+          <Text
+            style={
+              activeTab === "claim" ? styles.activeText : styles.inactiveText
+            }
+          >
+            Claim Process
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabButton, activeTab === "intimateclaim" && styles.activeTab]}
+          style={[
+            styles.tabButton,
+            activeTab === "intimateclaim" && styles.activeTab,
+          ]}
           onPress={() => setActiveTab("intimateclaim")}
         >
-          <Text style={activeTab === "intimateclaim" ? styles.activeText : styles.inactiveText}>Intimate Claim</Text>
+          <Text
+            style={
+              activeTab === "intimateclaim"
+                ? styles.activeText
+                : styles.inactiveText
+            }
+          >
+            Intimate Claim
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -164,89 +190,134 @@ const Claims = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
           {activeTab === "claim" ? (
             <View>
-              <Text style={styles.heading}>File Motor Claims in Simple Steps</Text>
+              <Text style={styles.heading}>
+                File Motor Claims in Simple Steps
+              </Text>
               {steps.map((step) => (
                 <OfferCard key={step.id} step={step} />
               ))}
             </View>
           ) : (
             <View style={styles.formSection}>
-  <Text style={styles.heading}>Intimate Claim</Text>
+              <Text style={styles.heading}>Intimate Claim</Text>
 
-  <View style={styles.fieldContainer}>
-    <Text style={styles.label}>Policy Number</Text>
-    <TextInput
-      style={[styles.input, errors.policyNumber && styles.inputError]}
-      value={formData.policyNumber}
-      onChangeText={(value) => handleInputChange("policyNumber", value)}
-      placeholder="GIC/2025-26/01/5244"
-      placeholderTextColor="#999"
-    />
-    {errors.policyNumber && <Text style={styles.errorText}>{errors.policyNumber}</Text>}
-  </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Policy Number</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    errors.policyNumber && styles.inputError,
+                  ]}
+                  value={formData.policyNumber}
+                  onChangeText={(value) =>
+                    handleInputChange("policyNumber", value)
+                  }
+                  placeholder="GIC/2025-26/01/5244"
+                  placeholderTextColor="#999"
+                />
+                {errors.policyNumber && (
+                  <Text style={styles.errorText}>{errors.policyNumber}</Text>
+                )}
+              </View>
 
-  <View style={styles.fieldContainer}>
-    <Text style={styles.label}>Email Address</Text>
-    <TextInput
-      style={[styles.input, errors.emailAddress && styles.inputError]}
-      value={formData.emailAddress}
-      onChangeText={(value) => handleInputChange("emailAddress", value)}
-      placeholder="Enter your email"
-      placeholderTextColor="#999"
-      keyboardType="email-address"
-    />
-    {errors.emailAddress && <Text style={styles.errorText}>{errors.emailAddress}</Text>}
-  </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Email Address</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    errors.emailAddress && styles.inputError,
+                  ]}
+                  value={formData.emailAddress}
+                  onChangeText={(value) =>
+                    handleInputChange("emailAddress", value)
+                  }
+                  placeholder="Enter your email"
+                  placeholderTextColor="#999"
+                  keyboardType="email-address"
+                />
+                {errors.emailAddress && (
+                  <Text style={styles.errorText}>{errors.emailAddress}</Text>
+                )}
+              </View>
 
-  <View style={styles.fieldContainer}>
-    <Text style={styles.label}>Register Number</Text>
-    <TextInput
-      style={[styles.input, errors.registerNumber && styles.inputError]}
-      value={formData.registerNumber}
-      onChangeText={(value) => handleInputChange("registerNumber", value)}
-      placeholder="e.g. TN01AB1234"
-      placeholderTextColor="#999"
-    />
-    {errors.registerNumber && <Text style={styles.errorText}>{errors.registerNumber}</Text>}
-  </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Register Number</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    errors.registerNumber && styles.inputError,
+                  ]}
+                  value={formData.registerNumber}
+                  onChangeText={(value) =>
+                    handleInputChange("registerNumber", value)
+                  }
+                  placeholder="e.g. TN01AB1234"
+                  placeholderTextColor="#999"
+                />
+                {errors.registerNumber && (
+                  <Text style={styles.errorText}>{errors.registerNumber}</Text>
+                )}
+              </View>
 
-  <View style={styles.fieldContainer}>
-    <Text style={styles.label}>Engine Number</Text>
-    <TextInput
-      style={[styles.input, errors.engineNumber && styles.inputError]}
-      value={formData.engineNumber}
-      onChangeText={(value) => handleInputChange("engineNumber", value)}
-      placeholder="Engine number"
-      placeholderTextColor="#999"
-    />
-    {errors.engineNumber && <Text style={styles.errorText}>{errors.engineNumber}</Text>}
-  </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Engine Number</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    errors.engineNumber && styles.inputError,
+                  ]}
+                  value={formData.engineNumber}
+                  onChangeText={(value) =>
+                    handleInputChange("engineNumber", value)
+                  }
+                  placeholder="Engine number"
+                  placeholderTextColor="#999"
+                />
+                {errors.engineNumber && (
+                  <Text style={styles.errorText}>{errors.engineNumber}</Text>
+                )}
+              </View>
 
-  <View style={styles.fieldContainer}>
-    <Text style={styles.label}>Chassis Number</Text>
-    <TextInput
-      style={[styles.input, errors.chassisNumber && styles.inputError]}
-      value={formData.chassisNumber}
-      onChangeText={(value) => handleInputChange("chassisNumber", value)}
-      placeholder="17 character chassis number"
-      placeholderTextColor="#999"
-    />
-    {errors.chassisNumber && <Text style={styles.errorText}>{errors.chassisNumber}</Text>}
-  </View>
-    
-  <View style={styles.buttonRow}>
-    <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-      <Text style={styles.resetText}>Reset</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-      <Text style={styles.nextText} >Move Next</Text>
-    </TouchableOpacity>
-  </View>
-</View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Chassis Number</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    errors.chassisNumber && styles.inputError,
+                  ]}
+                  value={formData.chassisNumber}
+                  onChangeText={(value) =>
+                    handleInputChange("chassisNumber", value)
+                  }
+                  placeholder="17 character chassis number"
+                  placeholderTextColor="#999"
+                />
+                {errors.chassisNumber && (
+                  <Text style={styles.errorText}>{errors.chassisNumber}</Text>
+                )}
+              </View>
 
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.resetButton}
+                  onPress={handleReset}
+                >
+                  <Text style={styles.resetText}>Reset</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.nextButton}
+                  onPress={handleNext}
+                >
+                  <Text style={styles.nextText}>Move Next</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
