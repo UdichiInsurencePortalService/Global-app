@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   Dimensions,
@@ -31,34 +32,41 @@ const users = [
     img: require("../../assets/images/car-icons.png"),
     Title: "Car Insurance",
     backgroundColor: "#FFF9E6",
+    route: "/car",
+    
   },
   {
     id: "2",
     img: require("../../assets/images/bike-icon.png"),
     Title: "Bike Insurance",
     backgroundColor: "#E1F0FF",
+    route: "/bike",
   },
   {
     id: "3",
     img: require("../../assets/images/health-icon.png"),
     Title: "Health Insurance",
     backgroundColor: "#E8F5E8",
+    route: "/health",
   },
   {
     id: "4",
     img: require("../../assets/images/rick.png"),
     Title: "Auto Insurance",
     backgroundColor: "#E1F0FF",
+    route: "/auto",
   },
   {
     id: "5",
     img: require("../../assets/images/home-icon.png"),
     Title: "Home Insurance",
     backgroundColor: "#D4F4DD",
+    route: "/home",
   },
 ];
 
 export default function Home() {
+  const router = useRouter();
   // Create rows of 3 items each
   const createRows = () => {
     const rows = [];
@@ -72,6 +80,7 @@ export default function Home() {
     <TouchableOpacity
       key={item.id}
       style={[styles.card, { backgroundColor: item.backgroundColor }]}
+      onPress={() => router.push(item.route)}
     >
       <View style={styles.iconContainer}>
         <Image source={item.img} style={styles.image} />
