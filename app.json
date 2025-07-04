@@ -1,10 +1,9 @@
 {
   "expo": {
-    "name": "globalreactapp",
+    "name": "Global Health & Allied Insurance",
     "slug": "globalreactapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "globalreactapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -28,13 +27,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "rgb(52, 152, 219)"
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
