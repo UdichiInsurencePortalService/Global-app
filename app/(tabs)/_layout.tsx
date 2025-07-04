@@ -128,7 +128,7 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="account"
         options={{
           title: "Account",
@@ -144,7 +144,7 @@ export default function TabLayout() {
             />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

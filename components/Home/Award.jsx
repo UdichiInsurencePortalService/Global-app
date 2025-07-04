@@ -1,12 +1,15 @@
+import { useRouter } from "expo-router";
+import { Animated, Linking } from "react-native";
+
+
 import { useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 // Mock icon components
@@ -44,6 +47,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const isTablet = screenWidth >= 768;
 
 const InsuranceBanner = () => {
+  const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
 
   // Simplified animations for better mobile performance
@@ -89,23 +93,31 @@ const InsuranceBanner = () => {
     console.log("Navigate to awards page");
   };
 
-  const handleButtonPress = () => {
-    // Button press animation
-    Animated.sequence([
-      Animated.timing(buttonScaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonScaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
 
-    handleBannerPress();
-  };
+const handleButtonPress = () => {
+  // Button press animation
+  Animated.sequence([
+    Animated.timing(buttonScaleAnim, {
+      toValue: 0.95,
+      duration: 100,
+      useNativeDriver: true,
+    }),
+    Animated.timing(buttonScaleAnim, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: true,
+    }),
+  ]).start(() => {
+    // Open the URL after animation completes
+    Linking.openURL("http://localhost:5173/Award").catch((err) =>
+      console.error("Failed to open URL:", err)
+    );
+  });
+
+  // Optional: any custom logic you already had
+  handleBannerPress?.();
+};
+
 
   return (
     <ScrollView
