@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Accident = () => {
   const router = useRouter();
@@ -208,194 +209,218 @@ const Accident = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>🚨 Accident Details Report</Text>
+      <SafeAreaView style={styles.SafeArea}>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>🚨 Accident Details Report</Text>
 
-        {/* Place of Accident */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>📍 Place of Accident *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter place of accident"
-            value={formData.placeOfAccident}
-            onChangeText={(text) => handleInputChange("placeOfAccident", text)}
-            editable={!isSubmitting}
-          />
-        </View>
-
-        {/* Accident Date */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>📅 Accident Date *</Text>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDatePicker(true)}
-            disabled={isSubmitting}
-          >
-            <Text
-              style={[styles.inputText, !dateSelected && styles.placeholder]}
-            >
-              {dateSelected
-                ? formatDate(formData.accidentDate)
-                : "Select accident date"}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={formData.accidentDate}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
-        </View>
-
-        {/* Time of Accident */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>🕐 Time of Accident *</Text>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowTimePicker(true)}
-            disabled={isSubmitting}
-          >
-            <Text
-              style={[styles.inputText, !timeSelected && styles.placeholder]}
-            >
-              {timeSelected
-                ? formatTime(formData.timeOfAccident)
-                : "Select accident time"}
-            </Text>
-          </TouchableOpacity>
-          {showTimePicker && (
-            <DateTimePicker
-              value={formData.timeOfAccident}
-              mode="time"
-              display="default"
-              onChange={handleTimeChange}
-            />
-          )}
-        </View>
-
-        {/* Weather Condition */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>🌤️ Weather Condition *</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={formData.weatherCondition}
-              onValueChange={(itemValue) =>
-                handleInputChange("weatherCondition", itemValue)
+          {/* Place of Accident */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>📍 Place of Accident *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter place of accident"
+              value={formData.placeOfAccident}
+              onChangeText={(text) =>
+                handleInputChange("placeOfAccident", text)
               }
-              style={styles.picker}
-              enabled={!isSubmitting}
-            >
-              {weatherOptions.map((option, index) => (
-                <Picker.Item
-                  key={index}
-                  label={option.label}
-                  value={option.value}
-                />
-              ))}
-            </Picker>
+              editable={!isSubmitting}
+            />
           </View>
-        </View>
 
-        {/* Describe the Accident */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>📝 Describe the Accident *</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Provide detailed description of the accident..."
-            value={formData.accidentDescription}
-            onChangeText={(text) =>
-              handleInputChange("accidentDescription", text)
-            }
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-            editable={!isSubmitting}
-          />
-        </View>
-
-        {/* Police Complaint Information */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>
-            🚔 Police Complaint Information
-          </Text>
-          <Text style={styles.questionText}>
-            Was a police complaint filed? *
-          </Text>
-
-          <View style={styles.radioContainer}>
+          {/* Accident Date */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>📅 Accident Date *</Text>
             <TouchableOpacity
-              style={[
-                styles.radioOption,
-                formData.policeComplaintFiled === true && styles.radioSelected,
-              ]}
-              onPress={() => handleInputChange("policeComplaintFiled", true)}
+              style={styles.input}
+              onPress={() => setShowDatePicker(true)}
               disabled={isSubmitting}
             >
-              <Text style={styles.radioText}>✅ Yes, complaint was filed</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.radioOption,
-                formData.policeComplaintFiled === false && styles.radioSelected,
-              ]}
-              onPress={() => handleInputChange("policeComplaintFiled", false)}
-              disabled={isSubmitting}
-            >
-              <Text style={styles.radioText}>
-                ❌ No, complaint was not filed
+              <Text
+                style={[styles.inputText, !dateSelected && styles.placeholder]}
+              >
+                {dateSelected
+                  ? formatDate(formData.accidentDate)
+                  : "Select accident date"}
               </Text>
             </TouchableOpacity>
+
+            {/* {showDatePicker && (
+    <DateTimePicker
+      value={formData.accidentDate}
+      mode="date"
+      display="default"
+      onChange={handleDateChange}
+      maximumDate={new Date()}  // ⛔ disables future dates
+    />
+  )} */}
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={formData.accidentDate}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+                maximumDate={new Date()} // 🔒 disables future dates
+              />
+            )}
           </View>
 
-          {/* Police Complaint Details - Show only if complaint was filed */}
-          {formData.policeComplaintFiled === true && (
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>📝 Police Complaint Details *</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Provide police complaint details, FIR number, station name, etc..."
-                value={formData.policeComplaintDetails}
-                onChangeText={(text) =>
-                  handleInputChange("policeComplaintDetails", text)
-                }
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-                editable={!isSubmitting}
+          {/* Time of Accident */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>🕐 Time of Accident *</Text>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowTimePicker(true)}
+              disabled={isSubmitting}
+            >
+              <Text
+                style={[styles.inputText, !timeSelected && styles.placeholder]}
+              >
+                {timeSelected
+                  ? formatTime(formData.timeOfAccident)
+                  : "Select accident time"}
+              </Text>
+            </TouchableOpacity>
+            {showTimePicker && (
+              <DateTimePicker
+                value={formData.timeOfAccident}
+                mode="time"
+                display="default"
+                onChange={handleTimeChange}
               />
-            </View>
-          )}
-        </View>
+            )}
+          </View>
 
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            isSubmitting && styles.submitButtonDisabled,
-          ]}
-          onPress={handleSubmit}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.submitButtonText}>
-            {isSubmitting ? "Submitting..." : "Submit Report"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          {/* Weather Condition */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>🌤️ Weather Condition *</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={formData.weatherCondition}
+                onValueChange={(itemValue) =>
+                  handleInputChange("weatherCondition", itemValue)
+                }
+                style={styles.picker}
+                enabled={!isSubmitting}
+              >
+                {weatherOptions.map((option, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={option.label}
+                    value={option.value}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+
+          {/* Describe the Accident */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>📝 Describe the Accident *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Provide detailed description of the accident..."
+              value={formData.accidentDescription}
+              onChangeText={(text) =>
+                handleInputChange("accidentDescription", text)
+              }
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              editable={!isSubmitting}
+            />
+          </View>
+
+          {/* Police Complaint Information */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>
+              🚔 Police Complaint Information
+            </Text>
+            <Text style={styles.questionText}>
+              Was a police complaint filed? *
+            </Text>
+
+            <View style={styles.radioContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.radioOption,
+                  formData.policeComplaintFiled === true &&
+                    styles.radioSelected,
+                ]}
+                onPress={() => handleInputChange("policeComplaintFiled", true)}
+                disabled={isSubmitting}
+              >
+                <Text style={styles.radioText}>
+                  ✅ Yes, complaint was filed
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.radioOption,
+                  formData.policeComplaintFiled === false &&
+                    styles.radioSelected,
+                ]}
+                onPress={() => handleInputChange("policeComplaintFiled", false)}
+                disabled={isSubmitting}
+              >
+                <Text style={styles.radioText}>
+                  ❌ No, complaint was not filed
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Police Complaint Details - Show only if complaint was filed */}
+            {formData.policeComplaintFiled === true && (
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>📝 Police Complaint Details *</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  placeholder="Provide police complaint details, FIR number, station name, etc..."
+                  value={formData.policeComplaintDetails}
+                  onChangeText={(text) =>
+                    handleInputChange("policeComplaintDetails", text)
+                  }
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  editable={!isSubmitting}
+                />
+              </View>
+            )}
+          </View>
+
+          {/* Submit Button */}
+          <TouchableOpacity
+            style={[
+              styles.submitButton,
+              isSubmitting && styles.submitButtonDisabled,
+            ]}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          >
+            <Text style={styles.submitButtonText}>
+              {isSubmitting ? "Submitting..." : "Submit Report"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff", // or any background
+  },
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
   formContainer: {
     padding: 20,
-    paddingBottom: 150,
+    paddingBottom: 70,
   },
   title: {
     fontSize: 24,

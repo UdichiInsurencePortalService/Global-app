@@ -64,9 +64,9 @@ export default function TabLayout() {
             <Image
               source={require("../../assets/images/home.png")}
               style={{ 
-                width: 24, 
-                height: 24,
-                tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
+                width: 30, 
+                height: 30,
+                // tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
               }}
               resizeMode="contain"
             />
@@ -80,11 +80,12 @@ export default function TabLayout() {
           title: "Claims",
           tabBarIcon: ({ color, focused }) => (
             <Image
-              source={require("../../assets/images/document.png")}
+              source={require("../../assets/images/claim (1).png")}
               style={{ 
-                width: 24, 
-                height: 24,
-                tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
+                width: 38, 
+                height: 30,
+                
+                // tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
               }}
               resizeMode="contain"
             />
@@ -98,11 +99,11 @@ export default function TabLayout() {
           title: "Policy",
           tabBarIcon: ({ color, focused }) => (
             <Image
-              source={require("../../assets/images/insurance-policy.png")}
+              source={require("../../assets/images/job (1).png")}
               style={{ 
-                width: 24, 
-                height: 24,
-                tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
+                width: 30, 
+                height: 30,
+                // tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
               }}
               resizeMode="contain"
             />
@@ -116,11 +117,11 @@ export default function TabLayout() {
           title: "Support",
           tabBarIcon: ({ color, focused }) => (
             <Image
-              source={require("../../assets/images/technical-support.png")}
+              source={require("../../assets/images/help-desk.png")}
               style={{ 
-                width: 24, 
-                height: 24,
-                tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
+                width: 30, 
+                height: 30,
+                // tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
               }}
               resizeMode="contain"
             />

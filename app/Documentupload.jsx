@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Documentupload = () => {
     const router = useRouter();
@@ -236,6 +237,7 @@ const Documentupload = () => {
 
   return (
     <ScrollView className="bg-gray-100 flex-1">
+    <SafeAreaView>
       <View className="p-5 pb-[150px]">
         <Text className="text-center text-[25px] font-bold text-gray-800 mb-2">
           📋 Upload Documents & Personal Details
@@ -379,6 +381,7 @@ const Documentupload = () => {
           </TouchableOpacity>
         </View>
       </View>
+    </ SafeAreaView>
     </ScrollView>
   );
 };

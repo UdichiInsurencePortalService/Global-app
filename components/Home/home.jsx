@@ -12,19 +12,25 @@ import {
   View,
 } from "react-native";
 
+
 import Carousel from "react-native-reanimated-carousel";
-import Whyinsurance from "../../components/Home/Whyinsurance";
+// import Whyinsurance from "../../components/Home/Whyinsurance";
+import OffersGrid from "../../Reusablecomponent/OffersGrid";
+// import OffersGrid from '../../'; // ✅ use the correct path
+
 
 const { width } = Dimensions.get("window");
 
 import InsuranceBanner from "../../components/Home/Award";
 import Healthadvantage from "../../components/Home/Healthadvantage";
+// import Whatis from "../../Reusablecomponent/Whatis";
 
 const images = [
   { src: require("../../assets/images/benefits-insurance.jpg") },
   { src: require("../../assets/images/benefits-insurance.jpg") },
   { src: require("../../assets/images/benefits-insurance.jpg") },
 ];
+
 
 const users = [
   {
@@ -33,7 +39,6 @@ const users = [
     Title: "Car Insurance",
     backgroundColor: "#FFF9E6",
     route: "/car",
-    
   },
   {
     id: "2",
@@ -65,7 +70,35 @@ const users = [
   },
 ];
 
-export default function Home() {
+
+const popularOffers = [
+    {
+      id: 1,
+      type: 'Customer First',
+      title: 'Putting you first. Protecting what matters most.',
+      backgroundColor: '#E8F5E8',
+    },
+    {
+      id: 2,
+      type: 'High Claim Settlement Ratio',
+      title: 'Hassle-free claims with a smooth and quick process.',
+      backgroundColor: '#D4F4DD',
+    },
+    {
+      id: 3,
+      type: 'Trustworthy & Dependable',
+      title: 'Our team is always available to assist you anytime, anywhere.',
+      backgroundColor: '#E1F0FF',
+    },
+    {
+      id: 4,
+      type: 'Customer Support',
+      title: 'Our customer support team is here to assist you every step of the way.',
+      backgroundColor: '#FFF9E6',
+    }
+  ];
+
+export default function  Home() {
   const router = useRouter();
   // Create rows of 3 items each
   const createRows = () => {
@@ -151,18 +184,25 @@ export default function Home() {
               {createRows().map(renderRow)}
             </View>
           </View>
-          
         </View>
 
         <View style={styles.container}>
           <InsuranceBanner />
         </View>
-        <View>
+        {/* <View>
           <Whyinsurance />
+        </View> */}
+        <View className="p-4">
+        <OffersGrid
+        sectionTitle="Populer Offers"
+          emoji="🛡️"
+          offers={popularOffers}
+        />
         </View>
         <View>
           <Healthadvantage />
         </View>
+       
       </ScrollView>
     </SafeAreaView>
   );
