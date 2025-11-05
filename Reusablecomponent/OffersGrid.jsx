@@ -109,14 +109,6 @@ const OffersGrid = ({
                   <Text style={styles.offerSubtitle}>{offer.subtitle}</Text>
                 )}
               </View>
-              
-              {/* Action indicator */}
-              {/* <View style={styles.actionIndicator}>
-                <Text style={styles.actionText}>Tap to explore</Text>
-                <View style={styles.arrow}>
-                  <Text style={styles.arrowText}>→</Text>
-                </View>
-              </View> */}
             </View>
           </Animated.View>
         </TouchableOpacity>

@@ -111,6 +111,24 @@ export default function TabLayout() {
         }}
       />
 
+       <Tabs.Screen
+        name="career"
+        options={{
+          title: "Career",
+          tabBarIcon: ({ color, focused }) => (
+            <Image
+              source={require("../../assets/images/job (1).png")}
+              style={{ 
+                width: 30, 
+                height: 30,
+                // tintColor: focused ? Colors[colorScheme ?? "light"].tint : Colors[colorScheme ?? "light"].tabIconDefault,
+              }}
+              resizeMode="contain"
+            />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="support"
         options={{

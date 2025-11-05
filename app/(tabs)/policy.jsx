@@ -1,22 +1,25 @@
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-
-
-import * as Sharing from 'expo-sharing';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Animated,
+  Dimensions,
   Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 const Policy = () => {
   const [policyNumber, setPolicyNumber] = useState('');
@@ -25,28 +28,73 @@ const Policy = () => {
   const [policyFound, setPolicyFound] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
 
+  // Animation references
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-50)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const successAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
   const navigation = useNavigation();
 
-  // Simplified PDF generation function
+  useEffect(() => {
+    // Initial entrance animation
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
-// Define formatAddress function (safe split by comma)
+    // Pulse animation for button
+    const pulse = () => {
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start(() => pulse());
+    };
+    pulse();
+  }, []);
 
+  useEffect(() => {
+    if (policyFound) {
+      Animated.spring(successAnim, {
+        toValue: 1,
+        tension: 100,
+        friction: 8,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      successAnim.setValue(0);
+    }
+  }, [policyFound]);
 
+  // Address formatter
+  const formatAddress = (address) => {
+    if (typeof address !== 'string') return [];
+    return address.split(',').map(line => line.trim());
+  };
 
-// Address formatter
-const formatAddress = (address) => {
-  if (typeof address !== 'string') return [];
-  return address.split(',').map(line => line.trim());
-};
-
-
-
-// Base64 fallback logo (just a 1x1 transparent PNG for safe testing)
-
-
-
-
-const generateSimplePDF = (policyData) => {
+  const generateSimplePDF = (policyData) => {
   try {
     const doc = new jsPDF();
     const margin = 20;
@@ -482,14 +530,11 @@ const generateSimplePDF = (policyData) => {
   }
 };
 
-
-
-
   // Function to check if policy exists
   const checkPolicyExists = async (policyNum, regNum) => {
     try {
       const response = await fetch(
-        `http://192.168.1.4:8080/api/policy?policyNumber=${encodeURIComponent(policyNum)}&registrationNumber=${encodeURIComponent(regNum)}`,
+        `http://192.168.1.6:8080/api/policy?policyNumber=${encodeURIComponent(policyNum)}&registrationNumber=${encodeURIComponent(regNum)}`,
         {
           method: "GET",
           headers: {
@@ -521,7 +566,7 @@ const generateSimplePDF = (policyData) => {
   const fetchAllUserData = async () => {
     try {
       const response = await fetch(
-        `http://192.168.1.4:8080/api/getpaymentuserdata`,
+        `http://192.168.1.6:8080/api/getpaymentuserdata`,
         {
           method: "GET",
           headers: {
@@ -654,7 +699,7 @@ const generateSimplePDF = (policyData) => {
         const fileName = `Policy_${policyNumber.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
         const fileUri = FileSystem.documentDirectory + fileName;
         
-        // Remove data URI prefix to get just the base64 data
+        // Remove data URI prefix to get just the base64 data 
         const base64Data = pdfBase64.split(',')[1];
         
         await FileSystem.writeAsStringAsync(fileUri, base64Data, {
@@ -685,173 +730,403 @@ const generateSimplePDF = (policyData) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Policy Verification</Text>
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a365d" />
+      
+      {/* Animated Header */}
+      <Animated.View 
+        style={[
+          styles.header,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}
+      >
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Policy Verification</Text>
+          <Text style={styles.subtitle}>Secure & Fast Verification</Text>
+        </View>
+        <View style={styles.headerDecoration} />
+      </Animated.View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Policy Number</Text>
-        <TextInput
-          style={styles.input}
-          value={policyNumber}
-          onChangeText={setPolicyNumber}
-          placeholder="Enter policy number"
-          autoCapitalize="none"
-          editable={!loading}
-        />
-
-        <Text style={styles.label}>Registration Number</Text>
-        <TextInput
-          style={styles.input}
-          value={registrationNumber}
-          onChangeText={setRegistrationNumber}
-          placeholder="Enter registration number"
-          autoCapitalize="characters"
-          editable={!loading}
-        />
-
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handlePolicyCheck}
-          disabled={loading}
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <Animated.View 
+          style={[
+            styles.formContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }]
+            }
+          ]}
         >
-          {loading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.buttonText}>Verify Policy</Text>
-          )}
-        </TouchableOpacity>
-
-        {policyFound && (
-          <View style={styles.successContainer}>
-            <Text style={styles.successText}>✓ Policy Verified!</Text>
-            {userDetails && (
-              <View style={styles.userInfo}>
-                <Text style={styles.userInfoText}>
-                  Owner: {userDetails.username || userDetails.owner || 'N/A'}
-                </Text>
-                <Text style={styles.userInfoText}>
-                  Mobile: {userDetails.mobile_number || 'N/A'}
-                </Text>
+          {/* Policy Number Input */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Policy Number</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                value={policyNumber}
+                onChangeText={setPolicyNumber}
+                placeholder="Enter your policy number"
+                placeholderTextColor="#a0a0a0"
+                autoCapitalize="none"
+                editable={!loading}
+              />
+              <View style={styles.inputIcon}>
+                <Text style={styles.iconText}>📋</Text>
               </View>
-            )}
-            
+            </View>
+          </View>
+
+          {/* Registration Number Input */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Registration Number</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                value={registrationNumber}
+                onChangeText={setRegistrationNumber}
+                placeholder="Enter registration number"
+                placeholderTextColor="#a0a0a0"
+                autoCapitalize="characters"
+                editable={!loading}
+              />
+              <View style={styles.inputIcon}>
+                <Text style={styles.iconText}>🚗</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Verify Button */}
+          <Animated.View
+            style={[
+              styles.buttonContainer,
+              !policyFound && { transform: [{ scale: pulseAnim }] }
+            ]}
+          >
             <TouchableOpacity
-              style={[styles.downloadButton, loading && styles.buttonDisabled]}
-              onPress={handleDownloadPDF}
+              style={[
+                styles.verifyButton,
+                loading && styles.buttonDisabled
+              ]}
+              onPress={handlePolicyCheck}
               disabled={loading}
+              activeOpacity={0.8}
             >
               {loading ? (
-                <ActivityIndicator color="#ffffff" />
+                <View style={styles.loadingContent}>
+                  <ActivityIndicator color="#ffffff" size="small" />
+                  <Text style={styles.buttonText}>Verifying...</Text>
+                </View>
               ) : (
-                <Text style={styles.buttonText}>Download Policy PDF</Text>
+                <View style={styles.buttonContent}>
+                  <Text style={styles.buttonText}>Verify Policy</Text>
+                  <Text style={styles.buttonIcon}>✓</Text>
+                </View>
               )}
             </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.resetButton}
-              onPress={resetForm}
+          </Animated.View>
+
+          {/* Success Container */}
+          {policyFound && (
+            <Animated.View
+              style={[
+                styles.successContainer,
+                {
+                  opacity: successAnim,
+                  transform: [
+                    { scale: successAnim },
+                    { translateY: successAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0]
+                    })}
+                  ]
+                }
+              ]}
             >
-              <Text style={styles.resetButtonText}>Verify Another Policy</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </ScrollView>
+              <View style={styles.successHeader}>
+                <View style={styles.successIcon}>
+                  <Text style={styles.successIconText}>✓</Text>
+                </View>
+                <Text style={styles.successTitle}>Policy Verified!</Text>
+              </View>
+              
+              {userDetails && (
+                <View style={styles.userInfoCard}>
+                  <Text style={styles.userInfoTitle}>Policy Details</Text>
+                  <View style={styles.userInfoRow}>
+                    <Text style={styles.userInfoLabel}>Owner:</Text>
+                    <Text style={styles.userInfoValue}>
+                      {userDetails.username || userDetails.owner || 'N/A'}
+                    </Text>
+                  </View>
+                  <View style={styles.userInfoRow}>
+                    <Text style={styles.userInfoLabel}>Mobile:</Text>
+                    <Text style={styles.userInfoValue}>
+                      {userDetails.mobile_number || 'N/A'}
+                    </Text>
+                  </View>
+                  <View style={styles.userInfoRow}>
+                    <Text style={styles.userInfoLabel}>Policy:</Text>
+                    <Text style={styles.userInfoValue}>{policyNumber}</Text>
+                  </View>
+                </View>
+              )}
+              
+              {/* Download Button */}
+              <TouchableOpacity
+                style={[
+                  styles.downloadButton,
+                  loading && styles.buttonDisabled
+                ]}
+                onPress={handleDownloadPDF}
+                disabled={loading}
+                activeOpacity={0.8}
+              >
+                {loading ? (
+                  <View style={styles.loadingContent}>
+                    <ActivityIndicator color="#ffffff" size="small" />
+                    <Text style={styles.buttonText}>Generating PDF...</Text>
+                  </View>
+                ) : (
+                  <View style={styles.buttonContent}>
+                    <Text style={styles.buttonText}>Download Policy PDF</Text>
+                    <Text style={styles.buttonIcon}>📄</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              
+              {/* Reset Button */}
+              <TouchableOpacity
+                style={styles.resetButton}
+                onPress={resetForm}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.resetButtonText}>Verify Another Policy</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+        </Animated.View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8fafc',
   },
   header: {
-    backgroundColor: '#0066cc',
-    padding: 20,
+    backgroundColor: '#1a365d',
+    paddingTop: 50,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  headerContent: {
     alignItems: 'center',
+    zIndex: 1,
+  },
+  headerDecoration: {
+    position: 'absolute',
+    top: -50,
+    right: -50,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(66, 153, 225, 0.1)',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#ffffff',
+    marginBottom: 5,
   },
-  form: {
+  subtitle: {
+    fontSize: 16,
+    color: '#e2e8f0',
+    opacity: 0.9,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  formContainer: {
     padding: 20,
+    paddingTop: 30,
+  },
+  inputGroup: {
+    marginBottom: 25,
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#2d3748',
     marginBottom: 8,
-    color: '#333',
+  },
+  inputWrapper: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
-    backgroundColor: '#fff',
-    marginBottom: 16,
+    backgroundColor: '#ffffff',
+    color: '#2d3748',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  button: {
-    backgroundColor: '#0066cc',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
+  inputIcon: {
+    position: 'absolute',
+    right: 15,
+    top: '50%',
+    transform: [{ translateY: -10 }],
+  },
+  iconText: {
+    fontSize: 20,
+  },
+  buttonContainer: {
     marginTop: 10,
+    marginBottom: 20,
+  },
+  verifyButton: {
+    backgroundColor: '#4299e1',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    shadowColor: '#4299e1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#a0aec0',
+    shadowOpacity: 0.1,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    marginHorizontal: 8,
+  },
+  buttonIcon: {
+    color: '#ffffff',
+    fontSize: 18,
+    marginLeft: 8,
   },
   successContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
     marginTop: 20,
-    padding: 20,
-    backgroundColor: '#e8f5e8',
-    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
     borderWidth: 1,
-    borderColor: '#4caf50',
+    borderColor: '#e2e8f0',
   },
-  successText: {
-    fontSize: 18,
+  successHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  successIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#48bb78',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  successIconText: {
+    color: '#ffffff',
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#4caf50',
-    textAlign: 'center',
-    marginBottom: 10,
   },
-  userInfo: {
-    marginBottom: 15,
+  successTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#48bb78',
   },
-  userInfoText: {
+  userInfoCard: {
+    backgroundColor: '#f7fafc',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  userInfoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2d3748',
+    marginBottom: 12,
+  },
+  userInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  userInfoLabel: {
     fontSize: 14,
-    color: '#333',
-    marginBottom: 5,
+    color: '#718096',
+    fontWeight: '500',
+  },
+  userInfoValue: {
+    fontSize: 14,
+    color: '#2d3748',
+    fontWeight: '600',
   },
   downloadButton: {
-    backgroundColor: '#4caf50',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10,
+    backgroundColor: '#48bb78',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    marginBottom: 12,
+    shadowColor: '#48bb78',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   resetButton: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderWidth: 2,
+    borderColor: '#4299e1',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#0066cc',
   },
   resetButtonText: {
-    color: '#0066cc',
+    color: '#4299e1',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
 
